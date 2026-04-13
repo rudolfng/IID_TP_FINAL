@@ -1,0 +1,7 @@
+astronomy_observatory:
+  outputs:
+    dev:
+      type: duckdb
+      path: "md:tp_final"
+      motherduck_token: "{{ env_var('MOTHERDUCK_TOKEN') }}"
+  target: dev

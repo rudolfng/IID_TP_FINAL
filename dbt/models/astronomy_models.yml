@@ -1,0 +1,69 @@
+version: 2
+
+models:
+  # Capa Staging
+  - name: stg_weather
+    description: "Datos de clima aplanados de OpenWeather"
+    columns:
+      - name: forecast_timestamp
+        tests:
+          - not_null
+      - name: cloud_coverage
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 100
+      - name: location_name
+        tests:
+          - not_null
+
+  - name: stg_celestial_bodies
+    description: "Posiciones de cuerpos celestes extraídas de AstronomyAPI"
+    columns:
+      - name: observation_timestamp
+        tests:
+          - not_null
+      - name: altitude
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: -90
+              max_value: 90
+      - name: planet_id
+        tests:
+          - not_null
+      - name: location_name
+        tests:
+          - not_null
+
+  # Capa Marts (OBT)
+  - name: obt_observation_windows
+    description: "Tabla de hechos final (One Big Table) con scores y categorías para Metabase"
+    tests:
+      - dbt_expectations.expect_compound_columns_to_be_unique:
+          column_list: ["planet_id", "location_name", "observation_time"]
+      - dbt_expectations.expect_table_row_count_to_be_between:
+          min_value: 1
+    columns:
+      - name: observation_time
+        tests:
+          - not_null
+      - name: observation_score
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 100
+      - name: visibility_category
+        tests:
+          - accepted_values:
+              values: ['Excelente', 'Bueno', 'Pobre', 'No Recomendado']
+      - name: humidity
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 100
+      - name: location_name
+        tests:
+          - not_null
+      - name: planet_id
+        tests:
+          - not_null

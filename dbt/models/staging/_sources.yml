@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: astronomy_raw
+    description: "Datos crudos de OpenWeather y AstronomyAPI en MotherDuck"
+    database: tp_final
+    schema: main
+    tables:
+      - name: forecast
+        description: "Datos de pronóstico del tiempo cada 3 horas"
+      - name: celestial_bodies
+        description: "Posiciones de cuerpos celestes"
